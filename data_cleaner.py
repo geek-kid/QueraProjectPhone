@@ -8,8 +8,9 @@ def parse_price(misc_information: list[dict]):
     for misc_data in misc_information:
         for key, value in misc_data.items():
             if key == "Price":
+                processed_prices = value.replace(" ", "").replace(" ", "")
                 if "$" in value:
-                    processed_prices = value.replace(" ", "").replace(" ", "").split("/")
+                    processed_prices = processed_prices.split("/")
                     for processed_price in processed_prices:
                         if "$" in processed_price:
                             price = ""
