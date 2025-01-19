@@ -47,9 +47,19 @@ def parse_display_information(display_information: list[dict]) -> tuple:
         for key, value in display_data.items():
             if key == "Resolution" and not resolution:
                 resolution_string = value.split(",")[0].replace(" ", "").split("x")
-                resolution = int("".join(char for char in resolution_string[0] if char.isdigit())) * int("".join(char for char in resolution_string[1] if char.isdigit()))
+                resolution = int("".join(char for char in resolution_string[0] if char.isdigit())) * int(
+                    "".join(char for char in resolution_string[1] if char.isdigit()))
             elif key == "Size" and not size:
-                size = float("".join(char for char in value.split(" ")[0] if char.isdigit()))
+                size = ""
+                for char in value.split(",")[0]:
+                    if char.isdigit():
+                        size += char
+                    elif char == ".":
+                        size += "."
+            try:
+                size = float(size)
+            except ValueError:
+                print(key, value)
     return resolution, size
 
 
@@ -62,7 +72,9 @@ def parse_date(lunch_information: list[dict]) -> tuple:
                 try:
                     made_at = int(value.split(",")[0])
                 except ValueError:
-                    print(value)
+                    made_at = 0
+                    status = 2
+                    return made_at, status
                     pass
             elif key == "Status":
                 status = 1 if "Available" in value else 0
@@ -83,23 +95,22 @@ def os_parser(platform_information: list[dict]) -> int:
     for platform_data in platform_information:
         for key, value in platform_data.items():
             if key == "OS":
-                value = value.lower()
+                value = value.lower().split(" ")[0]
                 if "android" in value:
                     return 1
-                elif "ios" in value or "ipados" in value:
+                elif "ios" == value or "ipados" == value:
                     return 2
                 else:
-                    print(platform_data)
                     return 3
     return 1
 
 
-def parse_5g(network_options: list[dict]) -> bool:
+def parse_5g(network_options: list[dict]) -> int:
     for option_json in network_options:
         for key, _ in option_json.items():
             if "5G" in key:
-                return True
-    return False
+                return 1
+    return 0
 
 
 def parse_memory_data(memory_information: list[dict]) -> tuple:
@@ -108,11 +119,25 @@ def parse_memory_data(memory_information: list[dict]) -> tuple:
             if key == "Internal":
                 if "GB" not in value:
                     continue
+                if "MB" in value:
+                    return 0, 0
                 parsed_data = value.split(',')[0].split(" RAM")[0].replace("GB", "").split(" ")
                 try:
-                    ram = int(parsed_data[1])
-                    storage = int(parsed_data[0])
-                except ValueError:
-                    continue
-                return ram, storage
+                    parsed_data[1]
+                except IndexError:
+                    parsed_data.append(None)
+                if parsed_data[0] and parsed_data[1]:
+                    ram = float(parsed_data[1])
+                    storage = float(parsed_data[0])
+                    return ram, storage
+                else:
+                    if not parsed_data[1]:
+                        ram = float(value.split(',')[1].split(" RAM")[0].replace("GB", "").split(" ")[1])
+                    else:
+                        ram = float(parsed_data[1])
+                    if not parsed_data[0]:
+                        storage = value.split(',')[1].split(" RAM")[0].replace("GB", "").split(" ")[0]
+                    else:
+                        storage = float(parsed_data[0])
+                    return ram, storage
     return 0, 0
