@@ -1,7 +1,7 @@
 from datetime import datetime
 
 CURRENT_YEAR = datetime.now().year
-EURO_TO_UD = 1.03
+EUR_TO_USD = 1.03
 
 
 def parse_price(misc_information: list[dict]):
@@ -19,15 +19,14 @@ def parse_price(misc_information: list[dict]):
                                 elif char == ".":
                                     price += "."
                             return float(price)
-                        else:
-                            price = ""
-                            if "EUR" in value:
-                                for char in processed_price:
-                                    if char.isdigit():
-                                        price += char
-                                    elif char == ".":
-                                        price += "."
-                                return EURO_TO_UD * float(price)
+            elif "EUR" in value:
+                price = ""
+                for char in value:
+                    if char.isdigit():
+                        price += char
+                    elif char == ".":
+                        price += "."
+                return float(price) * EUR_TO_USD
 
 
 def get_battery(battery_information: list[dict]) -> int:
