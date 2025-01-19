@@ -47,9 +47,9 @@ def parse_display_information(display_information: list[dict]) -> tuple:
         for key, value in display_data.items():
             if key == "Resolution" and not resolution:
                 resolution_string = value.split(",")[0].replace(" ", "").split("x")
-                resolution = int(resolution_string[0]) * int(resolution_string[1])
+                resolution = int("".join(char for char in resolution_string[0] if char.isdigit())) * int("".join(char for char in resolution_string[1] if char.isdigit()))
             elif key == "Size" and not size:
-                size = float(value.split(" ")[0])
+                size = float("".join(char for char in value.split(" ")[0] if char.isdigit()))
     return resolution, size
 
 
