@@ -8,8 +8,26 @@ def parse_price(misc_information: list[dict]):
     for misc_data in misc_information:
         for key, value in misc_data.items():
             if key == "Price":
-                price = value.encode("utf-8").split(" / ")[0]
-
+                if "$" in value:
+                    processed_prices = value.replace(" ", "").replace(" ", "").split("/")
+                    for processed_price in processed_prices:
+                        if "$" in processed_price:
+                            price = ""
+                            for char in processed_price:
+                                if char.isdigit():
+                                    price += char
+                                elif char == ".":
+                                    price += "."
+                            return float(price)
+                        else:
+                            price = ""
+                            if "EUR" in value:
+                                for char in processed_price:
+                                    if char.isdigit():
+                                        price += char
+                                    elif char == ".":
+                                        price += "."
+                                return EURO_TO_UD * float(price)
 
 
 def get_battery(battery_information: list[dict]) -> int:
