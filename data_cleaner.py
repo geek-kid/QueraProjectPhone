@@ -19,14 +19,14 @@ def parse_price(misc_information: list[dict]):
                                 elif char == ".":
                                     price += "."
                             return float(price)
-            elif "EUR" in value:
-                price = ""
-                for char in value:
-                    if char.isdigit():
-                        price += char
-                    elif char == ".":
-                        price += "."
-                return float(price) * EUR_TO_USD
+                elif "EUR" in value:
+                    price = ""
+                    for char in value:
+                        if char.isdigit():
+                            price += char
+                        elif char == ".":
+                            price += "."
+                    return float(price) * EUR_TO_USD
 
 
 def get_battery(battery_information: list[dict]) -> int:
