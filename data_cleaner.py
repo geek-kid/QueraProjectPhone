@@ -19,7 +19,7 @@ def parse_price(misc_information: list[dict]):
                                     price += char
                                 elif char == ".":
                                     price += "."
-                            return float(price)
+                            return round(float(price), 1)
                 elif "EUR" in value:
                     price = ""
                     for char in value:
@@ -27,7 +27,7 @@ def parse_price(misc_information: list[dict]):
                             price += char
                         elif char == ".":
                             price += "."
-                    return float(price) * EUR_TO_USD
+                    return round(float(price) * EUR_TO_USD, 1)
 
 
 def get_battery(battery_information: list[dict]) -> int:
@@ -35,9 +35,11 @@ def get_battery(battery_information: list[dict]) -> int:
         for key, value in battery_data.items():
             if key == "Type":
                 try:
-                    return int(''.join(char for char in value if char.isdigit()))
+                    result = int(''.join(char for char in value if char.isdigit()))
                 except ValueError:
                     return 0
+                return result if result < 11000 else 0
+
     return 0
 
 
